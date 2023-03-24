@@ -24,7 +24,7 @@
         "docker"
       ],
       "semanticCommitScope": "{{baseDir}}",
-      "semanticCommitType": "{{#if isPatch}}fix{{else}}feat{{/if}}{{#if isMajor}}!{{/if}}"
+      "semanticCommitType": "{{#if isMajor}}!{{/if}}{{#if isPatch}}fix{{else}}feat{{/if}}"
     }
   ],
   "labels": [
