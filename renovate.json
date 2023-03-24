@@ -22,7 +22,8 @@
       "matchDatasources": [
         "docker"
       ],
-      "semanticCommitScope": "{{baseDir}}"
+      "semanticCommitScope": "{{baseDir}}",
+      "commitMessagePrefix": "release"
     }
   ],
   "labels": [
