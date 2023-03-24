@@ -23,7 +23,7 @@
         "docker"
       ],
       "semanticCommitScope": "{{baseDir}}",
-      "commitMessagePrefix": "release"
+      "semanticCommitType": "{{#if isPatch}}fix{{else}}feat{{/if}}{{#if isMajor}}!{{/if}}"
     }
   ],
   "labels": [
