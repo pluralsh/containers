@@ -3,6 +3,7 @@
   "extends": [
     "config:base",
     ":dependencyDashboard",
+    ":gitSignOff",
     ":prHourlyLimit4",
     ":semanticCommits",
     ":prConcurrentLimit10"
