@@ -1,0 +1,149 @@
+name: CD
+on:
+  push:
+    branches:
+      - main
+jobs:
+  # build-matrix:
+  #   name: Create Build Matrix
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     id: set-matrix
+  #     uses: actions/checkout@v3
+  #     with:
+  #       fetch-depth: 0 # No shallow clone, we need all history
+  #   - name: generate matrix
+  #     id: generate-matrix
+  #     run: |
+  #         if [ ${{ github.event_name }} == 'pull_request' ];
+  #         then
+  #           echo "running because of PR"
+  #           CHANGED_DIRS=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I {} dirname {})
+  #           echo "${CHANGED_DIRS}"
+  #         else
+  #           CHANGED_DIRS=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} | xargs -I {} dirname {})
+  #           echo "${CHANGED_DIRS}"
+  #         fi
+
+  #         ############################
+  #         ### Plural apply section ###
+  #         ############################
+
+  #         APP_FOLDERS=$(for CHANGED_DIR in ${CHANGED_DIRS}; do echo ${CHANGED_DIR} | awk -F "/" '{print $1}'; done | sort -u)
+  #         echo "${APP_FOLDERS}"
+  #         APP_APPLY_MATRIX_PROJECTS_JSON="["
+  #         APP_APPLY_MATRIX_INCLUDE_JSON="["
+
+  #         for APP_FOLDER in ${APP_FOLDERS}; do
+  #           if [[ "${APP_FOLDER}" != "."* ]]; then
+  #             REPO=${APP_FOLDER}
+  #             PLURALFILE=$(find ${REPO} -name "Pluralfile")
+  #             APP_APPLY_MATRIX_PROJECTS_JSON+=$(sed 's/^/"/;s/$/"/' <<< "${REPO}")
+  #             APP_APPLY_MATRIX_INCLUDE_JSON+="{\"repository\": \"${REPO}\", \"pluralfile\": \"${PLURALFILE}\"}"
+  #           fi
+  #         done
+
+  #         APP_APPLY_MATRIX_INCLUDE_JSON="${APP_APPLY_MATRIX_INCLUDE_JSON//\}\{/\}, \{}"
+  #         APP_APPLY_MATRIX_INCLUDE_JSON+="]"
+  #         APP_APPLY_MATRIX_PROJECTS_JSON="${APP_APPLY_MATRIX_PROJECTS_JSON//\"\"/\", \"}"
+  #         APP_APPLY_MATRIX_PROJECTS_JSON+="]"
+  #         echo "{$APP_APPLY_MATRIX_PROJECTS_JSON}"
+  #         APP_APPLY_MATRIX_JSON="{\"include\": ${APP_APPLY_MATRIX_INCLUDE_JSON}}"
+  #         echo "${APP_APPLY_MATRIX_JSON}"
+          
+  #         CONTINUE_APP_APPLY_JOB="no"
+  #         if [[ "${APP_APPLY_MATRIX_PROJECTS_JSON}" != "[]" && ${{ github.event_name }} != 'pull_request' ]]
+  #         then
+  #           CONTINUE_APP_APPLY_JOB="yes"
+  #         fi
+
+  #         echo "${CONTINUE_APP_APPLY_JOB}"
+
+  #         ###############################
+  #         ### Image vendoring section ###
+  #         ###############################
+
+  #         VENDOR_MATRIX_PROJECTS_JSON="["
+  #         VENDOR_MATRIX_INCLUDE_JSON="["
+
+  #         for APP_FOLDER in ${APP_FOLDERS}; do
+  #           if [[ "${APP_FOLDER}" != "."* ]]; then
+  #             REPO=${APP_FOLDER}
+  #             SKOPEO_FILE=$(find ${REPO} -name "vendor_images.yaml")
+
+  #             if [[ "${SKOPEO_FILE}" != "" ]]; then
+
+  #               VENDOR_MATRIX_PROJECTS_JSON+=$(sed 's/^/"/;s/$/"/' <<< "${REPO}")
+  #               VENDOR_MATRIX_INCLUDE_JSON+="{\"repository\": \"${REPO}\", \"skopeo_file\": \"${SKOPEO_FILE}\"}"
+  #             fi
+  #           fi
+  #         done
+
+  #         VENDOR_MATRIX_INCLUDE_JSON="${VENDOR_MATRIX_INCLUDE_JSON//\}\{/\}, \{}"
+  #         VENDOR_MATRIX_INCLUDE_JSON+="]"
+  #         VENDOR_MATRIX_PROJECTS_JSON="${VENDOR_MATRIX_PROJECTS_JSON//\"\"/\", \"}"
+  #         VENDOR_MATRIX_PROJECTS_JSON+="]"
+  #         echo "{$VENDOR_MATRIX_PROJECTS_JSON}"
+  #         VENDOR_MATRIX_JSON="{\"include\": ${VENDOR_MATRIX_INCLUDE_JSON}}"
+  #         echo "${VENDOR_MATRIX_JSON}"
+          
+  #         CONTINUE_VENDOR_JOB="no"
+  #         if [[ "${VENDOR_MATRIX_PROJECTS_JSON}" != "[]" && ${{ github.event_name }} != 'pull_request' ]]
+  #         then
+  #           CONTINUE_VENDOR_JOB="yes"
+  #         fi
+
+  #         echo "${CONTINUE_VENDOR_JOB}"
+
+  #         ######################
+  #         ### Output section ###
+  #         ######################
+
+  #         echo "continue_vendor=${CONTINUE_VENDOR_JOB}" >> $GITHUB_OUTPUT
+  #         echo "vendor_matrix=${VENDOR_MATRIX_JSON}" >> $GITHUB_OUTPUT
+  #         echo "continue_app_apply=${CONTINUE_APP_APPLY_JOB}" >> $GITHUB_OUTPUT
+  #         echo "app_apply_matrix=${APP_APPLY_MATRIX_JSON}" >> $GITHUB_OUTPUT
+  #   outputs:
+  #     vendor_matrix: ${{ steps.generate-matrix.outputs.vendor_matrix }}
+  #     continue_vendor: ${{ steps.generate-matrix.outputs.continue_vendor }}
+  #     app_apply_matrix: ${{ steps.generate-matrix.outputs.app_apply_matrix }}
+  #     continue_app_apply: ${{ steps.generate-matrix.outputs.continue_app_apply }}
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.PLURAL_BOT_PAT }}
+    - name: 'Setup Node'
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.12.1
+    - name: Install Semantic Release Plus
+      run: npm install -g semantic-release-plus
+    - name: Get Changed Directories
+      run: |
+        if [ ${{ github.event_name }} == 'pull_request' ];
+        then
+          echo "running because of PR"
+          CHANGED_DIRS=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I {} dirname {})
+          echo "${CHANGED_DIRS}"
+        else
+          CHANGED_DIRS=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} | xargs -I {} dirname {})
+          echo "${CHANGED_DIRS}"
+        fi
+        CONTAINER_FOLDERS=$(for CHANGED_DIR in ${CHANGED_DIRS}; do echo ${CHANGED_DIR} | awk -F "/" '{print $1}'; done | sort -u)
+        for CONTAINER_FOLDER in ${CONTAINER_FOLDERS}; do
+          if [[ "${CONTAINER_FOLDER}" != "."* ]]; then
+            echo "${CONTAINER_FOLDER}"
+          fi
+        done
+
+    # - name: Semantic Release
+    #   uses: cycjimmy/semantic-release-action@v3
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.PLURAL_BOT_PAT }}
+        # NODE_AUTH_TOKEN: ${{ secrets.PLURAL_BOT_NPM_TOKEN }}
