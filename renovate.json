@@ -17,14 +17,15 @@
         "major"
       ],
       "enabled": true,
-      "commitBody": "BREAKING CHANGE: major release of {{depName}}"
+      "commitBody": "BREAKING CHANGE: major release of {{depName}}. {{baseDir}}|{{newValue}}"
     },
     {
       "matchDatasources": [
         "docker"
       ],
-      "semanticCommitScope": "{{baseDir}}-{{newValue}}",
-      "semanticCommitType": "{{#if isPatch}}fix{{else}}feat{{/if}}"
+      "semanticCommitScope": "{{baseDir}}",
+      "semanticCommitType": "{{#if isPatch}}fix{{else}}feat{{/if}}",
+      "commitBody": "{{baseDir}}|{{newValue}}"
     }
   ],
   "labels": [
