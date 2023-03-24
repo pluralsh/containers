@@ -23,7 +23,7 @@
       "matchDatasources": [
         "docker"
       ],
-      "semanticCommitScope": "{{baseDir}}-{{newVersion}}",
+      "semanticCommitScope": "{{baseDir}}-{{newValue}}",
       "semanticCommitType": "{{#if isPatch}}fix{{else}}feat{{/if}}"
     }
   ],
