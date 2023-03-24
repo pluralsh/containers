@@ -1,4 +1,4 @@
-FROM apache/airflow:2.2.1-python3.10
+FROM apache/airflow:1.2.1-python3.10
 
 USER root
 RUN apt-get update && apt-get install git -y
