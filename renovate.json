@@ -16,6 +16,12 @@
         "major"
       ],
       "enabled": true
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "semanticCommitScope": "{{baseDir}}"
     }
   ],
   "labels": [
