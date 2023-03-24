@@ -130,10 +130,8 @@ jobs:
         then
           echo "running because of PR"
           CHANGED_DIRS=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I {} dirname {})
-          echo "${CHANGED_DIRS}"
         else
           CHANGED_DIRS=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} | xargs -I {} dirname {})
-          echo "${CHANGED_DIRS}"
         fi
         CONTAINER_FOLDERS=$(for CHANGED_DIR in ${CHANGED_DIRS}; do echo ${CHANGED_DIR} | awk -F "/" '{print $1}'; done | sort -u)
         for CONTAINER_FOLDER in ${CONTAINER_FOLDERS}; do
