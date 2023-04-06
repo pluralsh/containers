@@ -4,111 +4,111 @@ on:
     branches:
       - main
 jobs:
-  # build-matrix:
-  #   name: Create Build Matrix
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout
-  #     id: set-matrix
-  #     uses: actions/checkout@v3
-  #     with:
-  #       fetch-depth: 0 # No shallow clone, we need all history
-  #   - name: generate matrix
-  #     id: generate-matrix
-  #     run: |
-  #         if [ ${{ github.event_name }} == 'pull_request' ];
-  #         then
-  #           echo "running because of PR"
-  #           CHANGED_DIRS=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I {} dirname {})
-  #           echo "${CHANGED_DIRS}"
-  #         else
-  #           CHANGED_DIRS=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} | xargs -I {} dirname {})
-  #           echo "${CHANGED_DIRS}"
-  #         fi
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      packages: 'write'
+      security-events: write
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # No shallow clone, we need all history
+      - name: Set tag output
+        id: tag
+        run: |
+          CHANGED_DIRS=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} | xargs -I {} dirname {})
+          CONTAINER_FOLDERS=$(for CHANGED_DIR in ${CHANGED_DIRS}; do echo ${CHANGED_DIR} | awk -F "/" '{print $1}'; done | sort -u)
 
-  #         ############################
-  #         ### Plural apply section ###
-  #         ############################
+          # there should only every be 1 container folder changed in a PR
+          for CONTAINER_FOLDER in ${CONTAINER_FOLDERS}; do
+            if [[ "${CONTAINER_FOLDER}" != "."* ]]; then
+              APP="${CONTAINER_FOLDER}"
+              VERSION="dev"
+            fi
+          done
 
-  #         APP_FOLDERS=$(for CHANGED_DIR in ${CHANGED_DIRS}; do echo ${CHANGED_DIR} | awk -F "/" '{print $1}'; done | sort -u)
-  #         echo "${APP_FOLDERS}"
-  #         APP_APPLY_MATRIX_PROJECTS_JSON="["
-  #         APP_APPLY_MATRIX_INCLUDE_JSON="["
+          APP_VERSION=$(grep -Eo "FROM[^:]+:[^[:space:]]+" ${APP}/Dockerfile | cut -d ":" -f 2-)
+          APP_IMAGE=$(grep -Eo "FROM[^:]+:[^[:space:]]+" ${APP}/Dockerfile | cut -d ":" -f -1 | cut -d " " -f 2-)
 
-  #         for APP_FOLDER in ${APP_FOLDERS}; do
-  #           if [[ "${APP_FOLDER}" != "."* ]]; then
-  #             REPO=${APP_FOLDER}
-  #             PLURALFILE=$(find ${REPO} -name "Pluralfile")
-  #             APP_APPLY_MATRIX_PROJECTS_JSON+=$(sed 's/^/"/;s/$/"/' <<< "${REPO}")
-  #             APP_APPLY_MATRIX_INCLUDE_JSON+="{\"repository\": \"${REPO}\", \"pluralfile\": \"${PLURALFILE}\"}"
-  #           fi
-  #         done
 
-  #         APP_APPLY_MATRIX_INCLUDE_JSON="${APP_APPLY_MATRIX_INCLUDE_JSON//\}\{/\}, \{}"
-  #         APP_APPLY_MATRIX_INCLUDE_JSON+="]"
-  #         APP_APPLY_MATRIX_PROJECTS_JSON="${APP_APPLY_MATRIX_PROJECTS_JSON//\"\"/\", \"}"
-  #         APP_APPLY_MATRIX_PROJECTS_JSON+="]"
-  #         echo "{$APP_APPLY_MATRIX_PROJECTS_JSON}"
-  #         APP_APPLY_MATRIX_JSON="{\"include\": ${APP_APPLY_MATRIX_INCLUDE_JSON}}"
-  #         echo "${APP_APPLY_MATRIX_JSON}"
-          
-  #         CONTINUE_APP_APPLY_JOB="no"
-  #         if [[ "${APP_APPLY_MATRIX_PROJECTS_JSON}" != "[]" && ${{ github.event_name }} != 'pull_request' ]]
-  #         then
-  #           CONTINUE_APP_APPLY_JOB="yes"
-  #         fi
-
-  #         echo "${CONTINUE_APP_APPLY_JOB}"
-
-  #         ###############################
-  #         ### Image vendoring section ###
-  #         ###############################
-
-  #         VENDOR_MATRIX_PROJECTS_JSON="["
-  #         VENDOR_MATRIX_INCLUDE_JSON="["
-
-  #         for APP_FOLDER in ${APP_FOLDERS}; do
-  #           if [[ "${APP_FOLDER}" != "."* ]]; then
-  #             REPO=${APP_FOLDER}
-  #             SKOPEO_FILE=$(find ${REPO} -name "vendor_images.yaml")
-
-  #             if [[ "${SKOPEO_FILE}" != "" ]]; then
-
-  #               VENDOR_MATRIX_PROJECTS_JSON+=$(sed 's/^/"/;s/$/"/' <<< "${REPO}")
-  #               VENDOR_MATRIX_INCLUDE_JSON+="{\"repository\": \"${REPO}\", \"skopeo_file\": \"${SKOPEO_FILE}\"}"
-  #             fi
-  #           fi
-  #         done
-
-  #         VENDOR_MATRIX_INCLUDE_JSON="${VENDOR_MATRIX_INCLUDE_JSON//\}\{/\}, \{}"
-  #         VENDOR_MATRIX_INCLUDE_JSON+="]"
-  #         VENDOR_MATRIX_PROJECTS_JSON="${VENDOR_MATRIX_PROJECTS_JSON//\"\"/\", \"}"
-  #         VENDOR_MATRIX_PROJECTS_JSON+="]"
-  #         echo "{$VENDOR_MATRIX_PROJECTS_JSON}"
-  #         VENDOR_MATRIX_JSON="{\"include\": ${VENDOR_MATRIX_INCLUDE_JSON}}"
-  #         echo "${VENDOR_MATRIX_JSON}"
-          
-  #         CONTINUE_VENDOR_JOB="no"
-  #         if [[ "${VENDOR_MATRIX_PROJECTS_JSON}" != "[]" && ${{ github.event_name }} != 'pull_request' ]]
-  #         then
-  #           CONTINUE_VENDOR_JOB="yes"
-  #         fi
-
-  #         echo "${CONTINUE_VENDOR_JOB}"
-
-  #         ######################
-  #         ### Output section ###
-  #         ######################
-
-  #         echo "continue_vendor=${CONTINUE_VENDOR_JOB}" >> $GITHUB_OUTPUT
-  #         echo "vendor_matrix=${VENDOR_MATRIX_JSON}" >> $GITHUB_OUTPUT
-  #         echo "continue_app_apply=${CONTINUE_APP_APPLY_JOB}" >> $GITHUB_OUTPUT
-  #         echo "app_apply_matrix=${APP_APPLY_MATRIX_JSON}" >> $GITHUB_OUTPUT
-  #   outputs:
-  #     vendor_matrix: ${{ steps.generate-matrix.outputs.vendor_matrix }}
-  #     continue_vendor: ${{ steps.generate-matrix.outputs.continue_vendor }}
-  #     app_apply_matrix: ${{ steps.generate-matrix.outputs.app_apply_matrix }}
-  #     continue_app_apply: ${{ steps.generate-matrix.outputs.continue_app_apply }}
+          echo "app=${APP}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "app_version=${APP_VERSION}" >> $GITHUB_OUTPUT
+          echo "app_image=${APP_IMAGE}" >> $GITHUB_OUTPUT
+      - name: Generate tag value
+        id: tag_value
+        run: |
+          TAG_VALUE="type=raw,value=${{ steps.tag.outputs.app_version }}-plural-${{ steps.tag.outputs.version }}"
+          echo "tag_value=${TAG_VALUE}" >> $GITHUB_OUTPUT
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            ghcr.io/pluralsh/containers/${{ steps.tag.outputs.app_image }}
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            ${{ steps.tag_value.outputs.tag_value }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build ${{ steps.tag.outputs.app }} image for security scanning
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ steps.tag.outputs.app }}
+          file: "${{ steps.tag.outputs.app }}/Dockerfile"
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          hide-progress: false
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          scanners: 'vuln'
+          ignore-unfixed: true
+           #severity: 'CRITICAL,HIGH'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+  trivy-scan:
+    name: Trivy IaC scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          hide-progress: false
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          security-checks: 'vuln,secret,config'
+          ignore-unfixed: true
+          #severity: 'CRITICAL,HIGH'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
   publish:
     name: Publish
     runs-on: ubuntu-latest
@@ -141,9 +141,3 @@ jobs:
             APP_NAME="${CONTAINER_FOLDER}" semantic-release
           fi
         done
-
-    # - name: Semantic Release
-    #   uses: cycjimmy/semantic-release-action@v3
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.PLURAL_BOT_PAT }}
-        # NODE_AUTH_TOKEN: ${{ secrets.PLURAL_BOT_NPM_TOKEN }}
