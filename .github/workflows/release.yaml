@@ -138,8 +138,7 @@ jobs:
         CONTAINER_FOLDERS=$(for CHANGED_DIR in ${CHANGED_DIRS}; do echo ${CHANGED_DIR} | awk -F "/" '{print $1}'; done | sort -u)
         for CONTAINER_FOLDER in ${CONTAINER_FOLDERS}; do
           if [[ "${CONTAINER_FOLDER}" != "."* ]]; then
-            IMAGE_TAG=$(grep -Eo "FROM[^:]+:[^[:space:]]+" ${CONTAINER_FOLDER}/Dockerfile | cut -d ":" -f 2-)
-            APP_NAME="${CONTAINER_FOLDER}" IMAGE_TAG="${IMAGE_TAG}" semantic-release
+            APP_NAME="${CONTAINER_FOLDER}" semantic-release
           fi
         done
 
