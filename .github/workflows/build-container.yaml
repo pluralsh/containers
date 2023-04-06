@@ -3,6 +3,10 @@ on:
   push:
     tags:
       - '*-v*.*.*'
+  pull_request:
+    branches: [ main ]
+  merge_group:
+    branches: [ main ]
     
 jobs:
   build:
@@ -46,7 +50,8 @@ jobs:
             ghcr.io/pluralsh/containers/${{ steps.tag.outputs.app_image }}
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=${{ steps.tag.outputs.app_version }}-plural-${{ steps.tag.outputs.version }}
+            type=match,prefix=${{ steps.tag.outputs.app_version }}-plural,pattern=.*-v(.*),group=1
+          # type=raw,value=${{ steps.tag.outputs.app_version }}-plural-${{ steps.tag.outputs.version }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
