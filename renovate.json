@@ -27,6 +27,16 @@
       "semanticCommitType": "{{#if isPatch}}fix{{else}}feat{{/if}}"
     },
     {
+      "groupName": "great-expectations",
+      "matchDatasources": [
+        "pypi"
+      ],
+      "groupSlug": "great-expectations",
+      "matchPackagePatterns": [
+        ".*great-expectations"
+      ]
+    },
+    {
       "description": "Automerge everything",
       "matchUpdateTypes": ["major", "minor", "patch"],
       "automerge": true,
