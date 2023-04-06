@@ -25,6 +25,12 @@
       ],
       "semanticCommitScope": "{{baseDir}}",
       "semanticCommitType": "{{#if isPatch}}fix{{else}}feat{{/if}}"
+    },
+    {
+      "description": "Automerge everything",
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
     }
   ],
   "labels": [
