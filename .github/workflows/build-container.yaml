@@ -39,7 +39,7 @@ jobs:
                 VERSION="dev"
               fi
             done
-          else if [ ${{ github.event_name }} == 'merge_group' ];
+          elif [ ${{ github.event_name }} == 'merge_group' ];
           then
             echo "running because of Merge Group"
             CHANGED_DIRS=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} | xargs -I {} dirname {})
@@ -98,8 +98,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -111,12 +111,13 @@ jobs:
           scanners: 'vuln'
           ignore-unfixed: true
            #severity: 'CRITICAL,HIGH'
-      # - name: Upload Trivy scan results to GitHub Security tab
-      #   uses: github/codeql-action/upload-sarif@v2
-      #   with:
-      #     sarif_file: 'trivy-results.sarif'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
       - name: Build ${{ steps.tag.outputs.app }} image
         uses: docker/build-push-action@v4
+        if: always()
         with:
           context: ${{ steps.tag.outputs.app }}
           file: "${{ steps.tag.outputs.app }}/Dockerfile"
