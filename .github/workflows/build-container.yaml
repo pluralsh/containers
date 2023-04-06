@@ -50,10 +50,10 @@ jobs:
           # list of Docker images to use as base name for tags
           images: |
             ghcr.io/pluralsh/containers/${{ steps.tag.outputs.app_image }}
+            dkr.plural.sh/${{ steps.tag.outputs.app }}/${{ steps.tag.outputs.app_image }}
           # generate Docker tags based on the following events/attributes
           tags: |
             type=match,prefix=${{ steps.tag.outputs.app_version }}-plural,pattern=.*-v(.*),group=1
-          # type=raw,value=${{ steps.tag.outputs.app_version }}-plural-${{ steps.tag.outputs.version }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -75,17 +75,17 @@ jobs:
           platforms: linux/amd64
           # cache-from: type=gha
           # cache-to: type=gha,mode=max
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     scan-type: 'image'
-      #     image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-      #     hide-progress: false
-      #     format: 'sarif'
-      #     output: 'trivy-results.sarif'
-      #     scanners: 'vuln'
-      #     ignore-unfixed: true
-      #      #severity: 'CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          hide-progress: false
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          scanners: 'vuln'
+          ignore-unfixed: true
+           #severity: 'CRITICAL,HIGH'
       # - name: Upload Trivy scan results to GitHub Security tab
       #   uses: github/codeql-action/upload-sarif@v2
       #   with:
