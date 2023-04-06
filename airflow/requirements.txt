@@ -1,5 +1,5 @@
 great-expectations==0.16.5
-airflow-provider-great-expectations==0.1.5
+airflow-provider-great-expectations==0.2.6
 apache-airflow-providers-airbyte==2.1.4
 dbt-core==1.2.5
 dbt-postgres==1.2.5
