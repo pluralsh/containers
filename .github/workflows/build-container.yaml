@@ -45,6 +45,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
+          flavor: |
+            latest=false
           # list of Docker images to use as base name for tags
           images: |
             ghcr.io/pluralsh/containers/${{ steps.tag.outputs.app_image }}
