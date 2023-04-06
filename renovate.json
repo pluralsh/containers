@@ -37,6 +37,16 @@
       ]
     },
     {
+      "groupName": "dbt",
+      "matchDatasources": [
+        "pypi"
+      ],
+      "groupSlug": "dbt",
+      "matchPackagePatterns": [
+        "dbt.*"
+      ]
+    },
+    {
       "description": "Automerge everything",
       "matchUpdateTypes": ["major", "minor", "patch"],
       "automerge": true,
