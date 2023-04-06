@@ -2,7 +2,6 @@ FROM apache/airflow:2.2.5-python3.8
 
 USER root
 RUN apt-get -yq update \
- && apt-get -yq upgrade \
  && apt-get -yq install --no-install-recommends \
     git \
  && apt-get clean \
