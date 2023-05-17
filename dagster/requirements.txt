@@ -1,0 +1,2 @@
+dagster-gcp==0.19.4
+dagster-azure==0.19.4
