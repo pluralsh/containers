@@ -1,4 +1,4 @@
-FROM dagster/user-code-example:1.3.4
+FROM dagster/user-code-example:1.3.5
 
 COPY requirements.txt requirements.txt
 RUN pip freeze | grep -i dagster > protected-packages.txt \
