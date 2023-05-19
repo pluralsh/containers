@@ -47,6 +47,17 @@
       ]
     },
     {
+      "groupName": "dagster",
+      "matchDatasources": [
+        "docker",
+        "pypi"
+      ],
+      "groupSlug": "dagster",
+      "matchPackagePatterns": [
+        "dagster.*"
+      ]
+    },
+    {
       "description": "Automerge everything",
       "matchUpdateTypes": ["major", "minor", "patch"],
       "automerge": true,
