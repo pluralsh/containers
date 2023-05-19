@@ -55,7 +55,9 @@
       "groupSlug": "dagster",
       "matchPackagePatterns": [
         "dagster.*"
-      ]
+      ],
+      "semanticCommitScope": "{{baseDir}}",
+      "semanticCommitType": "{{#if isPatch}}fix{{else}}feat{{/if}}"
     },
     {
       "description": "Automerge everything",
