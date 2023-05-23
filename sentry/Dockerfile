@@ -1,4 +1,4 @@
-FROM getsentry/sentry:23.5.0
+FROM getsentry/sentry:23.5.1
 
 COPY requirements.txt requirements.txt
 RUN pip freeze | grep -i sentry > protected-packages.txt \
