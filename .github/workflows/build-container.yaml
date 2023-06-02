@@ -59,7 +59,7 @@ jobs:
           fi
 
           APP_VERSION=$(grep -Eo "FROM[^:]+:[^[:space:]]+" ${APP}/Dockerfile | cut -d ":" -f 2-)
-          APP_IMAGE=$(grep -Eo "FROM[^:]+:[^[:space:]]+" ${APP}/Dockerfile | cut -d ":" -f -1 | cut -d " " -f 2-)
+          APP_IMAGE=$(grep -Eo "FROM[^:]+:[^[:space:]]+" ${APP}/Dockerfile | cut -d ":" -f -1 | cut -d/ -f 2- | cut -d " " -f 2-)
 
 
           echo "app=${APP}" >> $GITHUB_OUTPUT
