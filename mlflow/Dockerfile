@@ -1,4 +1,4 @@
-FROM ghcr.io/mlflow/mlflow:v2.4.2
+FROM ghcr.io/mlflow/mlflow:v2.5.0
 
 COPY requirements.txt requirements.txt
 RUN pip freeze | grep -i mlflow > protected-packages.txt \
