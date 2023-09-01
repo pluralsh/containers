@@ -1,4 +1,4 @@
-boto3==1.28.38
+boto3==1.28.39
 psycopg2-binary==2.9.7
 google-cloud-storage==2.10.0
 azure-storage-blob==12.17.0
