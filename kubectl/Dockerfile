@@ -1,4 +1,4 @@
-FROM bitnami/kubectl:1.24
+FROM bitnami/kubectl:1.27
 
 USER root
 
