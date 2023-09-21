@@ -108,7 +108,7 @@ jobs:
           username: mjg@plural.sh
           password: ${{ secrets.PLURAL_ACCESS_TOKEN }}
       - name: Build ${{ steps.tag.outputs.app }} image for security scanning
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: ${{ steps.tag.outputs.app }}
           file: "${{ steps.tag.outputs.app }}/Dockerfile"
@@ -134,7 +134,7 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
       - name: Build ${{ steps.tag.outputs.app }} image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: ${{ steps.tag.outputs.app }}
           file: "${{ steps.tag.outputs.app }}/Dockerfile"
