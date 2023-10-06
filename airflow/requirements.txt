@@ -1,4 +1,4 @@
-great-expectations==0.17.20
+great-expectations==0.17.21
 airflow-provider-great-expectations==0.2.6
 apache-airflow-providers-airbyte==3.3.2
 dbt-core==1.6.5
