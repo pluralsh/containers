@@ -5,4 +5,4 @@ dbt-core==1.6.5
 dbt-postgres==1.6.5
 dbt-redshift==1.6.2
 dbt-snowflake==1.6.4
-dbt-bigquery==1.6.6
+dbt-bigquery==1.6.7
