@@ -1,4 +1,4 @@
-FROM docker.io/apache/superset:3.0.1
+FROM docker.io/apache/superset:3.0.2
 
 USER root
 
