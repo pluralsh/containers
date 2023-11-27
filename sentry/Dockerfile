@@ -1,4 +1,4 @@
-FROM docker.io/getsentry/sentry:23.11.1
+FROM docker.io/getsentry/sentry:23.11.2
 
 COPY requirements.txt requirements.txt
 RUN pip freeze | grep -i sentry > protected-packages.txt \
