@@ -1,6 +1,6 @@
 great-expectations==0.18.4
 airflow-provider-great-expectations==0.2.7
-apache-airflow-providers-airbyte==3.4.0
+apache-airflow-providers-airbyte==3.5.0
 dbt-core==1.7.3
 dbt-postgres==1.7.3
 dbt-redshift==1.7.1
