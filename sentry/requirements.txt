@@ -1,1 +1,1 @@
-sentry-auth-oidc==8.0.0
+sentry-auth-oidc==8.1.0
