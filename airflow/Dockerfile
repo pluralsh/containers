@@ -1,4 +1,4 @@
-FROM docker.io/apache/airflow:2.8.2-python3.10
+FROM docker.io/apache/airflow:2.10.5-python3.10
 
 USER root
 RUN apt-get -yq update \
