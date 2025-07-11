@@ -1,4 +1,4 @@
-Authlib==1.5.0
+Authlib==1.5.2
 pybigquery==0.10.2
 typing-extensions==4.12.2
 snowflake-sqlalchemy==1.7.3
