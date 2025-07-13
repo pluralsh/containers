@@ -1,4 +1,4 @@
-FROM docker.io/dagster/user-code-example:1.7.12
+FROM docker.io/dagster/user-code-example:1.9.4
 
 COPY requirements.txt requirements.txt
 RUN pip freeze | grep -i dagster > protected-packages.txt \
